@@ -33,16 +33,18 @@ def poll(scope='all', timestamp=0, **kwargs):
               'all': 'ts'
               }
 
-    if not scope in scopes:
+    if scope not in scopes:
         print(f'Unknown scope {scope}. Valid scopes: {scopes}')
 
     poll_result = hub_api.poll(scopes[scope],timestamp, **kwargs)
     return poll_result
 
+
 def rules(**kwargs):
     # get rules
     _fill_kwargs(kwargs)
     return hub_api.rules(**kwargs)
+
 
 def users(**kwargs):
     # themes
