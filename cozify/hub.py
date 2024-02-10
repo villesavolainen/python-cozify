@@ -10,11 +10,50 @@ from absl import logging
 from . import config, hub_api
 from .Error import APIError, ConnectionError
 
+from time import time, sleep
+from pprint import pprint
+
 # Enum of known device capabilities. Alphabetically sorted, numeric value not guaranteed to stay constant between versions if new capabilities are added.
 capability = Enum(
     "capability",
     "ACTIVE_POWER ALERT BASS BATTERY_U BRIGHTNESS COLOR_HS COLOR_LOOP COLOR_TEMP CONTACT CONTROL_LIGHT CONTROL_POWER DEVICE DIMMER_CONTROL GENERATE_ALERT HUE_SWITCH HUMIDITY IDENTIFY IKEA_RC LOUDNESS LUX MEASURE_POWER MOISTURE MOTION MUTE NEXT ON_OFF PAUSE PLAY PREVIOUS PUSH_NOTIFICATION REMOTE_CONTROL SEEK SMOKE STOP TEMPERATURE TRANSITION TREBLE TWILIGHT UPGRADE USER_PRESENCE VOLUME",
 )
+
+
+def poll(scope='all', timestamp=0, **kwargs):
+    # devices, groups, scenes, rooms, alerts, alarms, rules
+    _fill_kwargs(kwargs)
+
+    scopes = {'devices': 'deviceTs',
+              'groups': 'groupTs',
+              'scenes': 'sceneTs',
+              'rules': 'ruleTs',
+              'all': 'ts'
+              }
+
+    if scope not in scopes:
+        print(f'Unknown scope {scope}. Valid scopes: {scopes}')
+
+    poll_result = hub_api.poll(scopes[scope],timestamp, **kwargs)
+    return poll_result
+
+
+def rules(**kwargs):
+    # get rules
+    _fill_kwargs(kwargs)
+    return hub_api.rules(**kwargs)
+
+
+def users(**kwargs):
+    # themes
+    _fill_kwargs(kwargs)
+    return hub_api.users(**kwargs)
+
+def scenes(**kwargs):
+    # themes
+    _fill_kwargs(kwargs)
+    return hub_api.scenes(**kwargs)
+
 
 ### Device data ###
 

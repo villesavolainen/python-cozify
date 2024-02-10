@@ -131,6 +131,35 @@ def tz(**kwargs):
     return get("/hub/tz", **kwargs)
 
 
+def poll(timestamp_scope, timestamp, **kwargs):
+    """1:1 implementation of /hub/poll API call.
+    Returns:
+        dict:
+    """
+    return get(f'/hub/poll?{timestamp_scope}={timestamp}', **kwargs)
+
+def rules(**kwargs):
+    """1:1 implementation of /rules API call.
+    Returns:
+        dict:
+    """
+    return get('/rules', **kwargs)
+
+def users(**kwargs):
+    """1:1 implementation of /users API call.
+    Returns:
+        dict:
+    """
+    return get('/hub/users', **kwargs)
+
+def scenes(**kwargs):
+    """1:1 implementation of /themes API call.
+    Returns:
+        dict:
+    """
+    return get('/scenes', **kwargs)
+
+
 def devices(**kwargs):
     """1:1 implementation of /devices API call. For remaining kwargs see cozify.hub_api.get()
 
