@@ -164,22 +164,23 @@ def refreshsession(cloud_token, **kwargs):  # pragma: no cover
     return get("/user/refreshsession", headers=headers, json_output=False, **kwargs)
 
 
-def remote(apicall, headers, data=None):
+def remote(apicall, headers, data=None, params=None):
     """1:1 implementation of 'hub/remote'
 
     Args:
         apicall(str): Full API call that would normally go directly to hub, e.g. '/cc/1.6/hub/colors'
         headers(dict): Headers to send with request. Must contain Authorization & X-Hub-Key data.
         data(str): json string to use as payload, changes method to PUT.
+        params(dict): Query parameters to include in the request.
 
     Returns:
         requests.response: Requests response object.
     """
 
     if data:
-        return put("/hub/remote" + apicall, headers=headers, data=data, raw=True)
+        return put("/hub/remote" + apicall, headers=headers, data=data, params=params, raw=True)
     else:
-        return get("/hub/remote" + apicall, headers=headers, raw=True)
+        return get("/hub/remote" + apicall, headers=headers, params=params, raw=True)
 
 
 def _call(
@@ -214,7 +215,10 @@ def _call(
     try:
         if method is requests.put:
             if data:
-                response = method(call, headers=headers, data=data, timeout=5)
+                if params:
+                    response = method(call, headers=headers, data=data, params=params, timeout=5)
+                else:
+                    response = method(call, headers=headers, data=data, timeout=5)
             else:
                 raise AttributeError("PUT call with no data, this would fail!")
         elif method is requests.post:
