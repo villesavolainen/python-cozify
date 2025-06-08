@@ -410,6 +410,130 @@ def scene_off(scene_id, **kwargs):
     hub_api.scenes_command_off(scene_id, **kwargs)
 
 
+### Rule data
+
+
+def rules(*, filters=None, **kwargs):
+    """Get full rule data set as a dict. Optionally filters rules by their values.
+
+    Args:
+        filters(dict): Filter rules by their values by defining key value pairs as a dict. Defaults to all rules.
+        **hub_name(str): optional name of hub to query. Will get converted to hubId for use.
+        **hub_id(str): optional id of hub to query. A specified hub_id takes presedence over a hub_name or default Hub. Providing incorrect hub_id's will create cruft in your state but it won't hurt anything beyond failing the current operation.
+        **remote(bool): Remote or local query.
+        **hubId(str): Deprecated. Compatibility keyword for hub_id, to be removed in v0.3
+        **hubName(str): Deprecated. Compatibility keyword for hub_name, to be removed in v0.3
+
+    Returns:
+        dict: rule data as returned by the API
+    """
+    _fill_kwargs(kwargs)
+    rls = hub_api.rules(**kwargs)
+    if filters is not None:
+        for key, val in filters.items():
+            rls = dict(filter(lambda e: e[1][key] == val, rls.items()))
+    return rls
+
+
+def rule(rule_id, **kwargs):
+    """Get rule data set as a dict.
+
+    Args:
+        rule_id(str): ID of the rule to retrieve.
+        **hub_name(str): optional name of hub to query. Will get converted to hub_id for use.
+        **hub_id(str): optional id of hub to query. A specified hub_id takes presedence over a hub_name or default Hub. Providing incorrect hub_id's will create cruft in your state but it won't hurt anything beyond failing the current operation.
+        **remote(bool): Remote or local query.
+
+    Returns:
+        dict: rule data as returned by the API
+
+    """
+    _fill_kwargs(kwargs)
+    return rules(**kwargs)[rule_id]
+
+
+### Rule control
+
+
+def rule_toggle(rule_id, **kwargs):
+    """Toggle on/off state of given rule.
+
+    Args:
+        rule_id(str): ID of the rule to toggle.
+        **hub_id(str): optional id of hub to operate on. A specified hub_id takes presedence over a hub_name or default Hub.
+        **hub_name(str): optional name of hub to operate on.
+        **remote(bool): Remote or local query.
+    """
+    _fill_kwargs(kwargs)
+    rule_active = rule(rule_id, **kwargs)["isOn"]
+    if rule_active:
+        rule_off(rule_id, **kwargs)
+    else:
+        rule_on(rule_id, **kwargs)
+
+
+def rule_on(rule_id, **kwargs):
+    """Turn on a rule.
+
+    Args:
+        rule_id(str): ID of the rule to operate on.
+    """
+    _fill_kwargs(kwargs)
+    hub_api.rules_command_on(rule_id, **kwargs)
+
+
+def rule_off(rule_id, **kwargs):
+    """Turn off a rule.
+
+    Args:
+        rule_id(str): ID of the rule to operate on.
+    """
+    _fill_kwargs(kwargs)
+    hub_api.rules_command_off(rule_id, **kwargs)
+
+
+### User data
+
+
+def users(*, filters=None, **kwargs):
+    """Get full user data set as a dict. Optionally filters users by their values.
+
+    Args:
+        filters(dict): Filter users by their values by defining key value pairs as a dict. Defaults to all users.
+        **hub_name(str): optional name of hub to query. Will get converted to hubId for use.
+        **hub_id(str): optional id of hub to query. A specified hub_id takes presedence over a hub_name or default Hub. Providing incorrect hub_id's will create cruft in your state but it won't hurt anything beyond failing the current operation.
+        **remote(bool): Remote or local query.
+        **hubId(str): Deprecated. Compatibility keyword for hub_id, to be removed in v0.3
+        **hubName(str): Deprecated. Compatibility keyword for hub_name, to be removed in v0.3
+
+    Returns:
+        dict: user data as returned by the API
+    """
+    _fill_kwargs(kwargs)
+    usrs = hub_api.users(**kwargs)
+    if filters is not None:
+        for key, val in filters.items():
+            usrs = dict(filter(lambda e: e[1][key] == val, usrs.items()))
+    return usrs
+
+
+def user(user_id, **kwargs):
+    """Get user data set as a dict.
+
+    Args:
+        user_id(str): ID of the user to retrieve.
+        **hub_name(str): optional name of hub to query. Will get converted to hub_id for use.
+        **hub_id(str): optional id of hub to query. A specified hub_id takes presedence over a hub_name or default Hub. Providing incorrect hub_id's will create cruft in your state but it won't hurt anything beyond failing the current operation.
+        **remote(bool): Remote or local query.
+
+    Returns:
+        dict: user data as returned by the API
+
+    """
+    _fill_kwargs(kwargs)
+    return users(**kwargs)[user_id]
+
+
 ### Hub modifiers ###
 
 
@@ -817,3 +941,26 @@ def getHubId(hub_name):  # pragma: no cover
         "hub.getHubId is deprecated and will be removed soon. Use hub.hub_id()"
     )
     return hub_id(hub_name)
+
+
+def hub_poll(ts=None, device_ts=None, group_ts=None, scene_ts=None, rule_ts=None, activator_ts=None, cozify_uuid=None, **kwargs):
+    """Get changes in hub data since specified timestamps.
+
+    Args:
+        ts(int): Timestamp for all data. If specified result contains all hub data that has changed after the timestamp.
+        device_ts(int): Timestamp for device data. If specified result contains device data that has changed after this timestamp.
+        group_ts(int): Timestamp for group data. If specified result contains group data that has changed after this timestamp.
+        scene_ts(int): Timestamp for scene data. If specified result contains scene data that has changed after this timestamp.
+        rule_ts(int): Timestamp for rule data. If specified result contains rule data that has changed after this timestamp.
+        activator_ts(int): Timestamp for activator data.
+        cozify_uuid(str): Client application identifier.
+        **hub_name(str): optional name of hub to query. Will get converted to hubId for use.
+        **hub_id(str): optional id of hub to query. A specified hub_id takes presedence over a hub_name or default Hub.
+        **remote(bool): Remote or local query.
+
+    Returns:
+        list: List of Delta objects indicating changes since the specified timestamps.
+    """
+    _fill_kwargs(kwargs)
+    return hub_api.hub_poll(ts=ts, device_ts=device_ts, group_ts=group_ts, scene_ts=scene_ts, 
+                           rule_ts=rule_ts, activator_ts=activator_ts, cozify_uuid=cozify_uuid, **kwargs)
