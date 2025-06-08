@@ -11,7 +11,7 @@ from absl import logging
 
 from cozify import cloud_api
 
-from .Error import APIError, ConnectionError
+from cozify.Error import APIError, ConnectionError
 
 apiPath = "/cc/1.14"
 
@@ -427,6 +427,14 @@ def hub_autoconfig(configuration, **kwargs):
         bool: True on success, otherwise error
     """
     return put("/hub/autoconfig", configuration, **kwargs)
+
+
+def users(**kwargs):
+    """1:1 implementation of /users API call.
+    Returns:
+        dict:
+    """
+    return get("/hub/users", **kwargs)
 
 
 def hub_poll(ts=None, device_ts=None, group_ts=None, scene_ts=None, rule_ts=None, activator_ts=None, cozify_uuid=None, **kwargs):
