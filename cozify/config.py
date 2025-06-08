@@ -1,8 +1,8 @@
 """Module for handling consistent state storage.
 
 Attributes:
-    state_file(str): file path where state storage is kept. By default XDG conventions are used. (Most likely ~/.config/python-cozify/python-cozify.cfg)
-    state(configparser.ConfigParser): State object used for in-memory state. By default initialized with _initState.
+    state_file(str): file path where state storage is kept. By default, XDG conventions are used. (Most likely ~/.config/python-cozify/python-cozify.cfg)
+    state(configparser.ConfigParser): State object used for in-memory state. By default, initialized with _initState.
 """
 
 import configparser
@@ -13,21 +13,21 @@ from absl import logging
 
 
 def _initXDG():
-    """Initialize config path per XDG basedir-spec and resolve the final location of state file storage.
+    """Initialize a config path per XDG basedir-spec and resolve the final location of state file storage.
 
     Returns:
-        str: file path to state file as per XDG spec and current env.
+        str: file path to a state file as per XDG spec and current env.
     """
 
-    # per the XDG basedir-spec we adhere to $XDG_CONFIG_HOME if it's set, otherwise assume $HOME/.config
+    # per the XDG basedir-spec, we adhere to $XDG_CONFIG_HOME if it's set, otherwise assume $HOME/.config
     xdg_config_home = ""
     if "XDG_CONFIG_HOME" in os.environ:
         xdg_config_home = os.environ["XDG_CONFIG_HOME"]
-        logging.debug("XDG basedir overriden: {0}".format(xdg_config_home))
+        logging.debug("XDG basedir overridden: {0}".format(xdg_config_home))
     else:
         xdg_config_home = "%s/.config" % os.path.expanduser("~")
 
-    # XDG base-dir: "If, when attempting to write a file, the destination directory is non-existant an attempt should be made to create it with permission 0700. If the destination directory exists already the permissions should not be changed."
+    # XDG base-dir: "If, when attempting to write a file, the destination directory is non-existant, an attempt should be made to create it with permission 0700. If the destination directory exists already, the permissions should not be changed."
     if not os.path.isdir(xdg_config_home):
         logging.debug(
             "XDG basedir does not exist, creating: {0}".format(xdg_config_home)
@@ -46,7 +46,7 @@ def _initXDG():
 
 
 def stateWrite(tmpstate=None):
-    """Write current state to file storage.
+    """Write the current state to file storage.
 
     Args:
         tmpstate(configparser.ConfigParser): State object to store instead of default state.
@@ -60,11 +60,11 @@ def stateWrite(tmpstate=None):
 
 
 def setStatePath(filepath=_initXDG(), copy_current=False):
-    """Set state storage path. Useful for example for testing without affecting your normal state. Call with no arguments to reset back to autoconfigured location.
+    """Set a state storage path. Useful, for example, for testing without affecting your normal state. Call with no arguments to reset back to autoconfigured location.
 
     Args:
-        filepath(str): file path to use as new storage location. Defaults to XDG defined path.
-        copy_current(bool): Instead of initializing target file, dump previous state into it.
+        filepath(str): file path to use as a new storage location. Defaults to XDG defined path.
+        copy_current(bool): Instead of initializing a target file, dump the previous state into it.
     """
     global state_file
     global state
@@ -76,7 +76,7 @@ def setStatePath(filepath=_initXDG(), copy_current=False):
 
 
 def dump_state():
-    """Print out current state file to stdout. Long values are truncated since this is only for visualization."""
+    """Print out the current state file to stdout. Long values are truncated since this is only for visualization."""
     for section in state.sections():
         print("[{!s:.10}]".format(section))
         for option in state.options(section):
@@ -91,7 +91,7 @@ def _initState(state_file):
     Returns:
         configparser.ConfigParser: State object.
     """
-    # if we can read it, read it in, otherwise create empty file
+    # if we can read it, read it in, otherwise create an empty file
     state = configparser.ConfigParser(allow_no_value=True)
     try:
         cf = open(state_file, "r")
